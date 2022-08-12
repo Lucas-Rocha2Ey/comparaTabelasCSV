@@ -1,0 +1,143 @@
+Relatório final do teste
+
+Arquivo original: C:\Users\NZ366ES\OneDrive - EY\Documents\Chubb\Comparar saidas\saida_tabela_1_csv.csv
+Arquivo convertido: C:\Users\NZ366ES\OneDrive - EY\Documents\Chubb\Comparar saidas\saida_tabela_5_csv.csv
+
+
+TESTE: EXTENSÃO DOS ARQUIVOS
+Os arquivos possuem a mesma extensão .csv.
+Resultado: TESTE APROVADO
+
+TESTE: QUANTIDADE DE LINHAS
+Os arquivos possuem a mesma quantidade de linhas - 13 linhas.
+Resultado: TESTE APROVADO
+
+TESTE: QUANTIDADE DE COLUNAS
+RESULTADO ESPERADO:
+Arquivo original: 4 colunas
+Arquivo convertido: 4 colunas
+RESULTADO OBTIDO: 
+Arquivo original: 4 colunas
+Arquivo convertido: 3 colunas.
+Resultado: TESTE REPROVADO
+
+TESTE: CONTEÚDO DAS COLUNAS
+RESULTADO ESPERADO:
+Arquivo original: ['Unnamed: 0', 'codcidade', 'cidade', 'uf']
+Arquivo convertido: ['Unnamed: 0', 'codcidade', 'cidade', 'uf']
+RESULTADO OBTIDO: 
+Arquivo original: ['Unnamed: 0', 'codcidade', 'cidade', 'uf']
+Arquivo convertido: ['Unnamed: 0', 'codcidade', 'cidade']
+Resultado: TESTE REPROVADO
+
+TESTE: CONTEÚDO DAS LINHAS
+Há 13 linhas no arquivo Original, mas ausente no convertido:
+Resultado: TESTE REPROVADO!
+
+TESTE: CONTEÚDO DAS LINHAS NA ORDEM
+Linha 1:
+RESULTADO ESPERADO:
+Arquivo original: [0, 1, 'Rio de Janeiro', 'RJ']
+Arquivo convertido: [0, 1, 'Rio de Janeiro', 'RJ']
+RESULTADO OBTIDO:
+Arquivo original: [0, 1, 'Rio de Janeiro', 'RJ']
+Arquivo convertido: [0, 1, 'Rio de Janeiro']
+
+Linha 2:
+RESULTADO ESPERADO:
+Arquivo original: [1, 2, 'São Paulo', 'SP']
+Arquivo convertido: [1, 2, 'São Paulo', 'SP']
+RESULTADO OBTIDO:
+Arquivo original: [1, 2, 'São Paulo', 'SP']
+Arquivo convertido: [1, 2, 'São Paulo']
+
+Linha 3:
+RESULTADO ESPERADO:
+Arquivo original: [2, 3, 'Rio Grande do Sul', 'RS']
+Arquivo convertido: [2, 3, 'Rio Grande do Sul', 'RS']
+RESULTADO OBTIDO:
+Arquivo original: [2, 3, 'Rio Grande do Sul', 'RS']
+Arquivo convertido: [2, 3, 'Rio Grande do Sul']
+
+Linha 4:
+RESULTADO ESPERADO:
+Arquivo original: [3, 4, 'Espirito Santo', 'ES']
+Arquivo convertido: [3, 4, 'Espirito Santo', 'ES']
+RESULTADO OBTIDO:
+Arquivo original: [3, 4, 'Espirito Santo', 'ES']
+Arquivo convertido: [3, 4, 'Espirito Santo']
+
+Linha 5:
+RESULTADO ESPERADO:
+Arquivo original: [4, 5, 'Goiás', 'GO']
+Arquivo convertido: [4, 5, 'Goiás', 'GO']
+RESULTADO OBTIDO:
+Arquivo original: [4, 5, 'Goiás', 'GO']
+Arquivo convertido: [4, 5, 'Goiás']
+
+Linha 6:
+RESULTADO ESPERADO:
+Arquivo original: [5, 6, 'Distrito Federal', 'DF']
+Arquivo convertido: [5, 6, 'Distrito Federal', 'DF']
+RESULTADO OBTIDO:
+Arquivo original: [5, 6, 'Distrito Federal', 'DF']
+Arquivo convertido: [5, 6, 'Distrito Federal']
+
+Linha 7:
+RESULTADO ESPERADO:
+Arquivo original: [6, 7, 'Bahia', 'BH']
+Arquivo convertido: [6, 7, 'Bahia', 'BH']
+RESULTADO OBTIDO:
+Arquivo original: [6, 7, 'Bahia', 'BH']
+Arquivo convertido: [6, 7, 'Bahia']
+
+Linha 8:
+RESULTADO ESPERADO:
+Arquivo original: [7, 8, 'Rio Grande do Norte', 'RN']
+Arquivo convertido: [7, 8, 'Rio Grande do Norte', 'RN']
+RESULTADO OBTIDO:
+Arquivo original: [7, 8, 'Rio Grande do Norte', 'RN']
+Arquivo convertido: [7, 8, 'Rio Grande do Norte']
+
+Linha 9:
+RESULTADO ESPERADO:
+Arquivo original: [8, 9, 'Sergipe', 'SE']
+Arquivo convertido: [8, 9, 'Sergipe', 'SE']
+RESULTADO OBTIDO:
+Arquivo original: [8, 9, 'Sergipe', 'SE']
+Arquivo convertido: [8, 9, 'Sergipe']
+
+Linha 10:
+RESULTADO ESPERADO:
+Arquivo original: [9, 10, 'Minas Gerais', 'MG']
+Arquivo convertido: [9, 10, 'Minas Gerais', 'MG']
+RESULTADO OBTIDO:
+Arquivo original: [9, 10, 'Minas Gerais', 'MG']
+Arquivo convertido: [9, 10, 'Minas Gerais']
+
+Linha 11:
+RESULTADO ESPERADO:
+Arquivo original: [10, 11, 'Paraná', 'PR']
+Arquivo convertido: [10, 11, 'Paraná', 'PR']
+RESULTADO OBTIDO:
+Arquivo original: [10, 11, 'Paraná', 'PR']
+Arquivo convertido: [10, 11, 'Paraná']
+
+Linha 12:
+RESULTADO ESPERADO:
+Arquivo original: [11, 12, 'Santa Catarina', 'SC']
+Arquivo convertido: [11, 12, 'Santa Catarina', 'SC']
+RESULTADO OBTIDO:
+Arquivo original: [11, 12, 'Santa Catarina', 'SC']
+Arquivo convertido: [11, 12, 'Santa Catarina']
+
+Linha 13:
+RESULTADO ESPERADO:
+Arquivo original: [12, 29, 'Pará', 'PA']
+Arquivo convertido: [12, 29, 'Pará', 'PA']
+RESULTADO OBTIDO:
+Arquivo original: [12, 29, 'Pará', 'PA']
+Arquivo convertido: [12, 29, 'Pará']
+
+Resultado: TESTE REPROVADO
+
