@@ -3,6 +3,7 @@ import csv
 import sys
 import time
 import pandas as pd
+from datetime import datetime
 
 def testeExistenciaArquivos(arquivo_original, arquivo_pos_conversao):
     """
@@ -30,12 +31,12 @@ def testeExtensao(arquivo_original, arquivo_pos_conversao):
     :param arquivo_pos_conversao: Caminho do arquivo no formato após a conversão
     :return: Relatório final do teste
     """
-    print("TESTE: EXTENSÃO DOS ARQUIVOS")
+    print("TESTE: FORMATO DOS ARQUIVOS")
     extensao_original = os.path.splitext(arquivo_original)[-1]
     extensao_pos_conversao = os.path.splitext(arquivo_pos_conversao)[-1]
 
     if extensao_original == extensao_pos_conversao:
-        print(f"Os arquivos possuem a mesma extensão {extensao_original}.\nResultado: TESTE APROVADO\n")
+        print(f"Os arquivos possuem o mesmo formato {extensao_original}.\nResultado: TESTE APROVADO\n")
     else:
         print(f"RESULTADO ESPERADO:\nArquivo original: {extensao_original}\n"\
               f"Arquivo convertido: {extensao_original}\n"\
@@ -186,38 +187,52 @@ def testeConteudoLinhas2(arquivo_original, arquivo_pos_conversao):
 
 
 
-# Os dois arquivos passarei como parâmetros ao executar o prompt
-arquivo_1 = os.getcwd() + "\\" + sys.argv[1]
-arquivo_2 = os.getcwd() + "\\" + sys.argv[2]
+if sys.argv[1].lower() == '-h':
+    print("Insira como parâmetros o nome do arquivo do relatório emitido no SAS e no Databricks, respectivamente")
+    print("Exemplo: python CompararSaidaBasico.py relatorio_sas.csv relatorio_databricks.csv")
+else:
+    # Os dois arquivos passarei como parâmetros ao executar o prompt
+    arquivo_1 = os.getcwd() + "\\" + sys.argv[1]
+    arquivo_2 = os.getcwd() + "\\" + sys.argv[2]
 
-if testeExistenciaArquivos(arquivo_1, arquivo_2):
+    if testeExistenciaArquivos(arquivo_1, arquivo_2):
 
-    #Imprimindo na tela
-    # Mostrando na tela o relatório do teste
-    print("Relatório final do teste\n")
-    print(f"Arquivo original: {arquivo_1}")
-    print(f"Arquivo convertido: {arquivo_2}\n\n")
-    testeExtensao(arquivo_1, arquivo_2)
-    testeQuantidadeLinhas(arquivo_1, arquivo_2)
-    testeQuantidadeColunas(arquivo_1, arquivo_2)
-    testeConteudoColunas(arquivo_1, arquivo_2)
-    testeConteudoLinhas2(arquivo_1, arquivo_2)
-    testeConteudoLinhas(arquivo_1, arquivo_2)
+        #Imprimindo na tela
+        # Mostrando na tela o relatório do teste
+        print("Relatório final do teste - Comparação de Saídas\n")
+        print(f"Arquivo original: {arquivo_1}")
+        print(f"Arquivo convertido: {arquivo_2}\n\n")
+        inicio = datetime.now()
+        testeExtensao(arquivo_1, arquivo_2)
+        testeQuantidadeLinhas(arquivo_1, arquivo_2)
+        testeQuantidadeColunas(arquivo_1, arquivo_2)
+        testeConteudoColunas(arquivo_1, arquivo_2)
+        testeConteudoLinhas2(arquivo_1, arquivo_2)
+        testeConteudoLinhas(arquivo_1, arquivo_2)
+        fim = datetime.now() - inicio
 
-    # Imprimindo na tela que o teste foi concluido
-    print("Teste finalizado com sucesso!")
+        # Imprimindo na tela que o teste foi concluido
+        print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
 
-    # Gerando o txt com o relatório
-    sys.stdout = open('Relatorio Final do Teste.txt', 'w')
-    print("Relatório final do teste\n")
-    print(f"Arquivo original: {arquivo_1}")
-    print(f"Arquivo convertido: {arquivo_2}\n\n")
-    testeExtensao(arquivo_1, arquivo_2)
-    testeQuantidadeLinhas(arquivo_1, arquivo_2)
-    testeQuantidadeColunas(arquivo_1, arquivo_2)
-    testeConteudoColunas(arquivo_1, arquivo_2)
-    testeConteudoLinhas2(arquivo_1, arquivo_2)
-    testeConteudoLinhas(arquivo_1, arquivo_2)
-    sys.stdout.close()
-
-    time.sleep(3)
+        char = input("Deseja imprimir o relatório? [digite Y para 'sim'] ")
+        if char.lower() == 'y':
+            # Gerando o txt com o relatório
+            sys.stdout = open('Relatorio Final do Teste - Comparação de Saídas.txt', 'w')
+            print("Relatório final do teste\n")
+            print(f"Data de Execução: {inicio.strftime('%d/%m/%Y %H:%M')}\n")
+            print(f"Arquivo original: {arquivo_1}")
+            print(f"Arquivo convertido: {arquivo_2}\n\n")
+            testeExtensao(arquivo_1, arquivo_2)
+            testeQuantidadeLinhas(arquivo_1, arquivo_2)
+            testeQuantidadeColunas(arquivo_1, arquivo_2)
+            testeConteudoColunas(arquivo_1, arquivo_2)
+            testeConteudoLinhas2(arquivo_1, arquivo_2)
+            testeConteudoLinhas(arquivo_1, arquivo_2)
+            print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
+            sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
+            sys.stdout.write("Relatório imprimido com sucesso!")
+            time.sleep(2)
+            sys.stdout.close()
+        else:
+            print("O script será fechado em 2 segundos...")
+            time.sleep(2)

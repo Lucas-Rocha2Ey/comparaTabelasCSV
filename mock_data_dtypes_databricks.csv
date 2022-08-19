@@ -2,6 +2,6 @@ columns,dtype
 NOME,string
 NACION,string
 DTEMIS,date
-SALBRU,float
-TIPCAT,int
+SALBRU,string
+TIPCAT,string
 CODSEX,char

@@ -1,9 +1,21 @@
-import pandas as pd
 import re
+import sys
+import os
+import time
+
+import pandas as pd
+from datetime import datetime
+
 
 # importar as duas tabelas
 df_dtypes_databricks = pd.read_csv("mock_data_dtypes_databricks.csv")
 df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", sep=';', header=1, usecols=[1,2,3,4,5])
+
+
+def is_file_empty(file_path):
+    """ Check if file is empty by confirming if its size is 0 bytes"""
+    # Check if file exist and it is empty
+    return os.path.exists(file_path) and os.stat(file_path).st_size == 0
 
 def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
     status_approved = True  # Flag que irá mudar no final do teste para ver se o teste foi aprovado ou não.
@@ -111,7 +123,11 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                             f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
                             f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
                             f"Resultado Esperado: date ou datetime\n")
-                elif 'word' in type_format.lower():
+                elif ('word' in type_format.lower()) or ('negparen' in type_format.lower()):
+                    # tipo negparenw.d no sas => -12345 = (12345)
+                    # Numero negativo é representado em parenteses.
+                    # tipo wordw.d no sas => 7 = SEVEN
+                    # Numeros são escritos por extenso.
                     if 'string' in tipo_variavel_databricks.lower():
                         print(
                             f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
@@ -139,4 +155,34 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
     else:
         print("Resultado do teste: REPROVADO")
 
+
+char = input("Aperte enter se já inseriu o tipo dos formatos originais do SAS no arquivo 'sas_proc_content_mock.csv'")
+char = input("Aperte enter se já inseriu o tipo dos formatos originais do Databricks no arquivo"
+             "'mock_data_dtypes_databricks.csv'")
+
+inicio = datetime.now()
+print("Iniciando teste de Tipo de Colunas...\n")
 testar_tipos(df_dtypes_databricks, df_dtypes_sas)
+fim = datetime.now() - inicio
+print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
+
+char = input("Deseja imprimir o relatório? [digite Y para 'sim'] ")
+if char.lower() == 'y':
+    sys.stdout = open('Relatório Final do Teste de Tipo de Colunas.txt', 'w')
+    print("Teste: Tipo de Colunas\n")
+    print(f"Data de Execução: {inicio.strftime('%d/%m/%Y %H:%M')}\n")
+    testar_tipos(df_dtypes_databricks, df_dtypes_sas)
+    print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
+    sys.stdout = sys.__stdout__   # Este comando volta a imprimir no console
+    sys.stdout.write("Relatório imprimido com sucesso!")
+    time.sleep(2)
+    sys.stdout.close()
+else:
+    print("O script será fechado em 2 segundos...")
+    time.sleep(2)
+
+
+
+
+
+
