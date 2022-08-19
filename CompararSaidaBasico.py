@@ -3,7 +3,29 @@ import csv
 import sys
 import time
 import pandas as pd
+import escrevendo_planilha_excel as epe
 from datetime import datetime
+
+DIRETORIO_ATUAL = os.getcwd()
+ARQUIVO_TEMPLATE = DIRETORIO_ATUAL + '\\Template - Relatório de teste.xlsx'
+DIRETORIO_DESTINO = DIRETORIO_ATUAL + '\\Relatório de teste.xlsx'
+
+def carregarExcel():
+    file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
+    if file_exists:
+        ##### Copia o arquivo para poder escrever
+        new_file = epe.copy_file(ARQUIVO_TEMPLATE)
+        ##### Abre o arquivo excel
+        excel = epe.load_excel_file(new_file)
+        return excel
+    else:
+        sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
+        sys.stdout.write("Não é possível escrever o relatório no Excel!")
+        time.sleep(2)
+        sys.exit(1)
+
+
+ARQUIVO_EXCEL = carregarExcel()
 
 def testeExistenciaArquivos(arquivo_original, arquivo_pos_conversao):
     """
@@ -187,6 +209,9 @@ def testeConteudoLinhas2(arquivo_original, arquivo_pos_conversao):
 
 
 
+
+
+
 if sys.argv[1].lower() == '-h':
     print("Insira como parâmetros o nome do arquivo do relatório emitido no SAS e no Databricks, respectivamente")
     print("Exemplo: python CompararSaidaBasico.py relatorio_sas.csv relatorio_databricks.csv")
@@ -229,6 +254,7 @@ else:
             testeConteudoLinhas2(arquivo_1, arquivo_2)
             testeConteudoLinhas(arquivo_1, arquivo_2)
             print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
+            epe.save_excel_file(ARQUIVO_EXCEL, DIRETORIO_DESTINO)
             sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
             sys.stdout.write("Relatório imprimido com sucesso!")
             time.sleep(2)

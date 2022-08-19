@@ -11,12 +11,6 @@ from datetime import datetime
 df_dtypes_databricks = pd.read_csv("mock_data_dtypes_databricks.csv")
 df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", sep=';', header=1, usecols=[1,2,3,4,5])
 
-
-def is_file_empty(file_path):
-    """ Check if file is empty by confirming if its size is 0 bytes"""
-    # Check if file exist and it is empty
-    return os.path.exists(file_path) and os.stat(file_path).st_size == 0
-
 def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
     status_approved = True  # Flag que irá mudar no final do teste para ver se o teste foi aprovado ou não.
 
