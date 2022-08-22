@@ -22,7 +22,7 @@ def copy_file(file_path):
         shutil.copyfile(origem, destino)
         return destino
     except PermissionError:
-        print("O arquivo não pode ser criado. Feche o arquivo e tente executar o script novamente")
+        print("O programa não pode ser executado! Feche o excel e tente executar novamente")
         sys.exit(1)
 
 def load_excel_file(file_path):
@@ -39,6 +39,11 @@ def write_cell_excel(excel: Workbook, sheet_name, cell, value):
     planilha = excel[sheet_name]
     planilha[cell] = value
 
+def read_cell_excel(excel: Workbook, sheet_name, cell):
+    """ This function writes a value at a cell and sheet inputted as parameters. """
+    planilha = excel[sheet_name]
+    return planilha[cell].value
+
 def demo():
     """ Função de teste para testar as demais funções do excel """
     diretorio_atual = os.getcwd()
@@ -54,13 +59,14 @@ def demo():
         write_cell_excel(excel, 'Sheet1', 'C6', 'Outro tester')
         write_cell_excel(excel, 'Sheet1', 'C9', datetime.datetime.now())
         write_cell_excel(excel, 'Sheet1', 'F9', 'Aprovado')
-        #planilha = excel['Sheet1']
-        ##### Escrevendo o nome do tester
-        #planilha['C6'] = 'Lucas Rocha Gonçalves Soares'
-        #planilha['C6'] = 'Rodrigo'
-        #planilha['C9'] = datetime.datetime.now()
+        print(read_cell_excel(excel, 'Sheet1', 'F9'))
+        if read_cell_excel(excel, 'Sheet1', 'F9') is not None:
+            write_cell_excel(excel, 'Sheet1', 'F9', None)
+        if read_cell_excel(excel, 'Sheet1', 'F9') is None:
+            print('Célula vazia')
         save_excel_file(excel, new_file)
         print('Arquivo escrito com sucesso!')
     else:
         print("O arquivo de template não existe")
         sys.exit(1)
+

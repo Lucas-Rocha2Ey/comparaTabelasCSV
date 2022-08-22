@@ -13,10 +13,26 @@ DIRETORIO_DESTINO = DIRETORIO_ATUAL + '\\Relatório de teste.xlsx'
 def carregarExcel():
     file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
     if file_exists:
-        ##### Copia o arquivo para poder escrever
-        new_file = epe.copy_file(ARQUIVO_TEMPLATE)
-        ##### Abre o arquivo excel
-        excel = epe.load_excel_file(new_file)
+        ##### Verificar se o arquivo relatório de teste já existe
+        file_template_exists = epe.does_file_exist(DIRETORIO_DESTINO)
+        ###### Se ele não existe, faça a cópia do arquivo template e crie um novo relatório de teste
+        if not file_template_exists:
+            ##### Copia o arquivo para poder escrever
+            new_file = epe.copy_file(ARQUIVO_TEMPLATE)
+            ##### Abre o arquivo excel
+            excel = epe.load_excel_file(new_file)
+        else:
+            ##### Abre o arquivo excel
+            excel = epe.load_excel_file(DIRETORIO_DESTINO)
+            ##### Verificar se os campos dos testes do Tipo de Colunas já está preenchido.
+            ###### Se tiver preenchido, apagar os campos e informar o usuário para executar comparar_dtypes.py após
+            ###### a execução do CompararSaidaBasico.py
+            if epe.read_cell_excel(excel, 'Sheet1', 'C15') is not None:
+                epe.write_cell_excel(excel, 'Sheet1', 'C15', None)
+                epe.write_cell_excel(excel, 'Sheet1', 'D15', None)
+                epe.write_cell_excel(excel, 'Sheet1', 'E15', None)
+                epe.write_cell_excel(excel, 'Sheet1', 'F15', None)
+                print("Execute novamente o comparar_dtype.py após a execução deste teste")
         return excel
     else:
         sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
@@ -57,13 +73,19 @@ def testeExtensao(arquivo_original, arquivo_pos_conversao):
     extensao_original = os.path.splitext(arquivo_original)[-1]
     extensao_pos_conversao = os.path.splitext(arquivo_pos_conversao)[-1]
 
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C9', datetime.now())
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D9', extensao_original)
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E9', extensao_pos_conversao)
+
     if extensao_original == extensao_pos_conversao:
         print(f"Os arquivos possuem o mesmo formato {extensao_original}.\nResultado: TESTE APROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F9', 'APROVADO')
     else:
         print(f"RESULTADO ESPERADO:\nArquivo original: {extensao_original}\n"\
               f"Arquivo convertido: {extensao_original}\n"\
               f"RESULTADO OBTIDO: \nArquivo original: {extensao_original}\n"\
               f"Arquivo convertido: {extensao_pos_conversao}.\nResultado: TESTE REPROVADO")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F9', 'REPROVADO')
 
 def testeQuantidadeLinhas(arquivo_original, arquivo_pos_conversao):
     """
@@ -77,14 +99,20 @@ def testeQuantidadeLinhas(arquivo_original, arquivo_pos_conversao):
     df_arquivo_original = pd.read_csv(arquivo_original)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao)
 
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C10', datetime.now())
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D10', df_arquivo_original.shape[0])
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E10', df_arquivo_convertido.shape[0])
+
     if df_arquivo_original.shape[0] == df_arquivo_convertido.shape[0]:
         print(f"Os arquivos possuem a mesma quantidade de linhas - {df_arquivo_original.shape[0]} linhas.\n" \
               "Resultado: TESTE APROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F10', 'APROVADO')
     else:
         print(f"RESULTADO ESPERADO:\nArquivo original: {df_arquivo_original.shape[0] } linhas\n" \
               f"Arquivo convertido: {df_arquivo_original.shape[0]} linhas\n" \
               f"RESULTADO OBTIDO: \nArquivo original: {df_arquivo_original.shape[0]} linhas\n" \
               f"Arquivo convertido: {df_arquivo_convertido.shape[0]} linhas.\nResultado: TESTE REPROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F10', 'REPROVADO')
 
 def testeQuantidadeColunas(arquivo_original, arquivo_pos_conversao):
     """
@@ -107,14 +135,20 @@ def testeQuantidadeColunas(arquivo_original, arquivo_pos_conversao):
     header_original = next(csv_original)
     header_convertido = next(csv_convertido)
 
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C11', datetime.now())
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D11', len(header_original))
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E11', len(header_convertido))
+
     if len(header_original) == len(header_convertido):
         print(f"Os arquivos possuem a mesma quantidade de colunas - {len(header_original)} colunas.\n"\
                 "Resultado: TESTE APROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F11', 'APROVADO')
     else:
         print(f"RESULTADO ESPERADO:\nArquivo original: {len(header_original)} colunas\n" \
               f"Arquivo convertido: {len(header_original)} colunas\n" \
               f"RESULTADO OBTIDO: \nArquivo original: {len(header_original)} colunas\n" \
               f"Arquivo convertido: {len(header_convertido)} colunas.\nResultado: TESTE REPROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F11', 'REPROVADO')
 
     file_original.close()
     file_convertido.close()
@@ -131,14 +165,20 @@ def testeConteudoColunas(arquivo_original, arquivo_pos_conversao):
     df_arquivo_original = pd.read_csv(arquivo_original)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao)
 
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C12', datetime.now())
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D12', list(df_arquivo_original.columns).__str__())
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E12', list(df_arquivo_convertido.columns).__str__())
+
     if list(df_arquivo_original.columns) == list(df_arquivo_convertido.columns):
         print(f"Os arquivos possuem as mesmas colunas - {list(df_arquivo_original.columns)}.\n" \
               "Resultado: TESTE APROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F12', 'APROVADO')
     else:
         print(f"RESULTADO ESPERADO:\nArquivo original: {list(df_arquivo_original.columns)}\n" \
               f"Arquivo convertido: {list(df_arquivo_original.columns)}\n" \
               f"RESULTADO OBTIDO: \nArquivo original: {list(df_arquivo_original.columns)}\n" \
               f"Arquivo convertido: {list(df_arquivo_convertido.columns)}\nResultado: TESTE REPROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F12', 'REPROVADO')
 
 def testeConteudoLinhas(arquivo_original, arquivo_pos_conversao):
     """
@@ -153,6 +193,8 @@ def testeConteudoLinhas(arquivo_original, arquivo_pos_conversao):
     df_arquivo_original = pd.read_csv(arquivo_original)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao)
 
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C13', datetime.now())
+
     try:
         for index, row in df_arquivo_original.iterrows():
             linha_arquivo_convertido = list(df_arquivo_convertido.iloc[index])
@@ -161,14 +203,20 @@ def testeConteudoLinhas(arquivo_original, arquivo_pos_conversao):
                       f"RESULTADO ESPERADO:\nArquivo original: {list(row)}\nArquivo convertido: {list(row)}\n"
                       f"RESULTADO OBTIDO:\nArquivo original: {list(row)}\nArquivo convertido: {linha_arquivo_convertido}\n")
                 passou = False
-
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D13', 'OK')
         if passou:
             print("Os arquivos possuem o mesmo conteúdo, na mesma ordem.\nResultado: TESTE APROVADO\n")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E13', 'MESMO CONTEÚDO DO SAS, NA ORDEM')
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F13', 'APROVADO')
         else:
             print("Resultado: TESTE REPROVADO\n")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E13', 'CONTEÚDO DIFERENTE DO SAS')
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F13', 'REPROVADO')
     except IndexError:
         print("Não é possível terminar o teste porque as duas tabelas não tem exatamente o mesmo número de linhas")
         print("Resultado: TESTE REPROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E13', 'QUANTIDADE DE LINHAS NÃO BATE COM SAS')
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F13', 'REPROVADO')
 
 def testeConteudoLinhas2(arquivo_original, arquivo_pos_conversao):
     """
@@ -186,6 +234,8 @@ def testeConteudoLinhas2(arquivo_original, arquivo_pos_conversao):
     conjunto_linhas_arquivo_original = set()
     conjunto_linhas_arquivo_convertido = set()
 
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C14', datetime.now())
+
     try:
         # Adicionando cada linha aos conjuntos
         for index, row in df_arquivo_original.iterrows():
@@ -199,14 +249,25 @@ def testeConteudoLinhas2(arquivo_original, arquivo_pos_conversao):
         if conjunto_linhas_arquivo_original.intersection(conjunto_linhas_arquivo_convertido)\
                 == conjunto_linhas_arquivo_original:
             print("Os arquivos possuem o mesmo conteúdo.\nResultado: TESTE APROVADO\n")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D14', 'OK')
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E14', 'MESMO CONTEÚDO')
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F14', 'APROVADO')
         elif conjunto_linhas_arquivo_original.difference(conjunto_linhas_arquivo_convertido) != set():
             print(f"Há {len(conjunto_linhas_arquivo_original.difference(conjunto_linhas_arquivo_convertido))}"
                   " linhas no arquivo Original, mas ausente no convertido:")
             print("Resultado: TESTE REPROVADO!\n")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D14', 'OK')
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E14', f"Há "
+            f"{len(conjunto_linhas_arquivo_original.difference(conjunto_linhas_arquivo_convertido))}"
+            f" linhas ausente no relatório")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F14', 'REPROVADO ')
     except IndexError:
         print("Não é possível terminar o teste porque os arquivos não possuem exatamente o mesmo número de linhas")
         print("Resultado: TESTE REPROVADO!\n")
-
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D14', 'OK')
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E14', f"Não é possível terminar o teste porque os arquivos" 
+        f"não possuem exatamente o mesmo número de linhas")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F14', 'REPROVADO ')
 
 
 
@@ -241,6 +302,8 @@ else:
 
         char = input("Deseja imprimir o relatório? [digite Y para 'sim'] ")
         if char.lower() == 'y':
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C3', arquivo_1.split('\\')[-1])
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C4', arquivo_2.split('\\')[-1])
             # Gerando o txt com o relatório
             sys.stdout = open('Relatorio Final do Teste - Comparação de Saídas.txt', 'w')
             print("Relatório final do teste\n")

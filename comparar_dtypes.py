@@ -2,9 +2,38 @@ import re
 import sys
 import os
 import time
+import escrevendo_planilha_excel as epe
 
 import pandas as pd
 from datetime import datetime
+
+DIRETORIO_ATUAL = os.getcwd()
+ARQUIVO_TEMPLATE = DIRETORIO_ATUAL + '\\Template - Relatório de teste.xlsx'
+DIRETORIO_DESTINO = DIRETORIO_ATUAL + '\\Relatório de teste.xlsx'
+
+def carregarExcel():
+    file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
+    if file_exists:
+        ##### Verificar se o arquivo relatório de teste já existe
+        file_template_exists = epe.does_file_exist(DIRETORIO_DESTINO)
+        ###### Se ele não existe, faça a cópia do arquivo template e crie um novo relatório de teste
+        if not file_template_exists:
+            ##### Copia o arquivo para poder escrever
+            new_file = epe.copy_file(ARQUIVO_TEMPLATE)
+            ##### Abre o arquivo excel
+            excel = epe.load_excel_file(new_file)
+        else:
+            ##### Abre o arquivo excel
+            excel = epe.load_excel_file(DIRETORIO_DESTINO)
+        return excel
+    else:
+        sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
+        sys.stdout.write("Não é possível escrever o relatório no Excel!")
+        time.sleep(2)
+        sys.exit(1)
+
+
+ARQUIVO_EXCEL = carregarExcel()
 
 
 # importar as duas tabelas
@@ -24,6 +53,7 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
             if value_error.args[0] == 'cannot convert float NaN to integer':
                 print("Existe pelo menos um campo da coluna 'Len' vazia na tabela proc_contents no SAS.\n"
                       "Abortando teste...")
+                epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F15', 'ABORTADO')
                 break
 
         if 'char' in tipo_variavel_sas.lower():
@@ -146,8 +176,14 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
 
     if status_approved:
         print("Resultado do teste: APROVADO")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D15', 'OK')
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E15', 'Todos os campos equivalentes')
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F15', 'APROVADO')
     else:
         print("Resultado do teste: REPROVADO")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D15', 'OK')
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E15', 'Há campos não equivalentes')
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F15', 'REPROVADO')
 
 
 char = input("Aperte enter se já inseriu o tipo dos formatos originais do SAS no arquivo 'sas_proc_content_mock.csv'")
@@ -162,12 +198,14 @@ print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
 
 char = input("Deseja imprimir o relatório? [digite Y para 'sim'] ")
 if char.lower() == 'y':
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C15', inicio)
     sys.stdout = open('Relatório Final do Teste de Tipo de Colunas.txt', 'w')
     print("Teste: Tipo de Colunas\n")
     print(f"Data de Execução: {inicio.strftime('%d/%m/%Y %H:%M')}\n")
     testar_tipos(df_dtypes_databricks, df_dtypes_sas)
     print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
     sys.stdout = sys.__stdout__   # Este comando volta a imprimir no console
+    epe.save_excel_file(ARQUIVO_EXCEL, DIRETORIO_DESTINO)
     sys.stdout.write("Relatório imprimido com sucesso!")
     time.sleep(2)
     sys.stdout.close()
