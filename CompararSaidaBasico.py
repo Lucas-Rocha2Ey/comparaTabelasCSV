@@ -11,33 +11,38 @@ ARQUIVO_TEMPLATE = DIRETORIO_ATUAL + '\\Template - Relatório de teste.xlsx'
 DIRETORIO_DESTINO = DIRETORIO_ATUAL + '\\Relatório de teste.xlsx'
 
 def carregarExcel():
-    file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
-    if file_exists:
-        ##### Verificar se o arquivo relatório de teste já existe
-        file_template_exists = epe.does_file_exist(DIRETORIO_DESTINO)
-        ###### Se ele não existe, faça a cópia do arquivo template e crie um novo relatório de teste
-        if not file_template_exists:
-            ##### Copia o arquivo para poder escrever
-            new_file = epe.copy_file(ARQUIVO_TEMPLATE)
-            ##### Abre o arquivo excel
-            excel = epe.load_excel_file(new_file)
+    try:
+        file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
+        if file_exists:
+            ##### Verificar se o arquivo relatório de teste já existe
+            file_template_exists = epe.does_file_exist(DIRETORIO_DESTINO)
+            ###### Se ele não existe, faça a cópia do arquivo template e crie um novo relatório de teste
+            if not file_template_exists:
+                ##### Copia o arquivo para poder escrever
+                new_file = epe.copy_file(ARQUIVO_TEMPLATE)
+                ##### Abre o arquivo excel
+                excel = epe.load_excel_file(new_file)
+            else:
+                ##### Abre o arquivo excel
+                excel = epe.load_excel_file(DIRETORIO_DESTINO)
+                ##### Verificar se os campos dos testes do Tipo de Colunas já está preenchido.
+                ###### Se tiver preenchido, apagar os campos e informar o usuário para executar comparar_dtypes.py após
+                ###### a execução do CompararSaidaBasico.py. Aqui terá que atualizar o C15 para a faixa das colunas dos
+                ###### testes
+                for i in [15,16,18]:
+                    if epe.read_cell_excel(excel, 'Sheet1', f'C{i}') is not None:
+                        epe.write_cell_excel(excel, 'Sheet1', f'C{i}', None)
+                        epe.write_cell_excel(excel, 'Sheet1', f'D{i}', None)
+                        epe.write_cell_excel(excel, 'Sheet1', f'E{i}', None)
+                        epe.write_cell_excel(excel, 'Sheet1', f'F{i}', None)
+            return excel
         else:
-            ##### Abre o arquivo excel
-            excel = epe.load_excel_file(DIRETORIO_DESTINO)
-            ##### Verificar se os campos dos testes do Tipo de Colunas já está preenchido.
-            ###### Se tiver preenchido, apagar os campos e informar o usuário para executar comparar_dtypes.py após
-            ###### a execução do CompararSaidaBasico.py
-            if epe.read_cell_excel(excel, 'Sheet1', 'C15') is not None:
-                epe.write_cell_excel(excel, 'Sheet1', 'C15', None)
-                epe.write_cell_excel(excel, 'Sheet1', 'D15', None)
-                epe.write_cell_excel(excel, 'Sheet1', 'E15', None)
-                epe.write_cell_excel(excel, 'Sheet1', 'F15', None)
-                print("Execute novamente o comparar_dtype.py após a execução deste teste")
-        return excel
-    else:
-        sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
-        sys.stdout.write("Não é possível escrever o relatório no Excel!")
-        time.sleep(2)
+            sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
+            sys.stdout.write("Não é possível escrever o relatório no Excel!")
+            time.sleep(2)
+            sys.exit(1)
+    except PermissionError:
+        print("Não é possível carregar o arquivo. Feche todas as planilhas do excel e tente novamente")
         sys.exit(1)
 
 

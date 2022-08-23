@@ -1,7 +1,6 @@
 columns,dtype
-NOME,string
-NACION,string
-DTEMIS,date
-SALBRU,string
-TIPCAT,string
-CODSEX,char
+ID,int
+NAME,string
+SALARY,float
+DEPT,string
+DOJ,date

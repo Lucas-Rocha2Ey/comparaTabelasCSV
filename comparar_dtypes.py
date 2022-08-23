@@ -12,24 +12,38 @@ ARQUIVO_TEMPLATE = DIRETORIO_ATUAL + '\\Template - Relatório de teste.xlsx'
 DIRETORIO_DESTINO = DIRETORIO_ATUAL + '\\Relatório de teste.xlsx'
 
 def carregarExcel():
-    file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
-    if file_exists:
-        ##### Verificar se o arquivo relatório de teste já existe
-        file_template_exists = epe.does_file_exist(DIRETORIO_DESTINO)
-        ###### Se ele não existe, faça a cópia do arquivo template e crie um novo relatório de teste
-        if not file_template_exists:
-            ##### Copia o arquivo para poder escrever
-            new_file = epe.copy_file(ARQUIVO_TEMPLATE)
-            ##### Abre o arquivo excel
-            excel = epe.load_excel_file(new_file)
+    try:
+        file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
+        if file_exists:
+            ##### Verificar se o arquivo relatório de teste já existe
+            file_template_exists = epe.does_file_exist(DIRETORIO_DESTINO)
+            ###### Se ele não existe, faça a cópia do arquivo template e crie um novo relatório de teste
+            if not file_template_exists:
+                ##### Copia o arquivo para poder escrever
+                new_file = epe.copy_file(ARQUIVO_TEMPLATE)
+                ##### Abre o arquivo excel
+                excel = epe.load_excel_file(new_file)
+            else:
+                ##### Abre o arquivo excel
+                excel = epe.load_excel_file(DIRETORIO_DESTINO)
+                ##### Verificar se os campos dos testes do Tipo de Colunas já está preenchido.
+                ###### Se tiver preenchido, apagar os campos e informar o usuário para executar comparar_dtypes.py após
+                ###### a execução do CompararSaidaBasico.py. Aqui terá que atualizar o C15 para a faixa das colunas dos
+                ###### testes
+                for i in [15,16,18]:
+                    if epe.read_cell_excel(excel, 'Sheet1', f'C{i}') is not None:
+                        epe.write_cell_excel(excel, 'Sheet1', f'C{i}', None)
+                        epe.write_cell_excel(excel, 'Sheet1', f'D{i}', None)
+                        epe.write_cell_excel(excel, 'Sheet1', f'E{i}', None)
+                        epe.write_cell_excel(excel, 'Sheet1', f'F{i}', None)
+            return excel
         else:
-            ##### Abre o arquivo excel
-            excel = epe.load_excel_file(DIRETORIO_DESTINO)
-        return excel
-    else:
-        sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
-        sys.stdout.write("Não é possível escrever o relatório no Excel!")
-        time.sleep(2)
+            sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console
+            sys.stdout.write("Não é possível escrever o relatório no Excel!")
+            time.sleep(2)
+            sys.exit(1)
+    except PermissionError:
+        print("Não é possível carregar o arquivo. Feche todas as planilhas do excel e tente novamente")
         sys.exit(1)
 
 
@@ -38,10 +52,12 @@ ARQUIVO_EXCEL = carregarExcel()
 
 # importar as duas tabelas
 df_dtypes_databricks = pd.read_csv("mock_data_dtypes_databricks.csv")
-df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", sep=';', header=1, usecols=[1,2,3,4,5])
+df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", sep=',', header=1)
 
 def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
     status_approved = True  # Flag que irá mudar no final do teste para ver se o teste foi aprovado ou não.
+
+    print(df_dtypes_sas)
 
     for cada_variavel in df_dtypes_sas['Variable'].values:
         try:
@@ -89,8 +105,20 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                 # Tenho que verificar se o campo format está Nulo ou se tem um formato específico (YYYYMMDD/DATE/etc.)
                 type_format = df_dtypes_sas.query(f"Variable == '{cada_variavel}'")['Format'].values[0]
                 if 'best' in type_format.lower():
-                    if int(type_format.split('.')[1]) > 0:
-                        if ('float' in tipo_variavel_databricks.lower()) or ('double' in tipo_variavel_databricks.lower()):
+                    if type_format.split('.')[1] != '':
+                        if int(type_format.split('.')[1]) > 0:
+                            if ('float' in tipo_variavel_databricks.lower()) or ('double' in tipo_variavel_databricks.lower()):
+                                print(
+                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                                    f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                            else:
+                                status_approved = False
+                                print(
+                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                                    f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                    f"Resultado Esperado: float ou double\n")
+                    else:
+                        if 'int' in tipo_variavel_databricks.lower():
                             print(
                                 f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
                                 f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
@@ -99,7 +127,7 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                             print(
                                 f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
                                 f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                                f"Resultado Esperado: float ou double\n")
+                                f"Resultado Esperado: int\n")
                 elif 'comma' in type_format.lower():
                     if int(type_format.split('.')[1]) > 0:
                         if ('float' in tipo_variavel_databricks.lower()) or ('double' in tipo_variavel_databricks.lower()):
