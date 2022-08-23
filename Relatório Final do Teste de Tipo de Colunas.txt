@@ -1,0 +1,44 @@
+Teste: Tipo de Colunas
+
+Data de Execução: 23/08/2022 14:32
+
+   # Variable  Type  Len     Format
+0  4     DEPT  Char    8        NaN
+1  5      DOJ   Num    8  YYMMDD10.
+2  1       ID   Num    8     BEST1.
+3  2     NAME  Char    8        NaN
+4  3   SALARY   Num    8   DOLLARW.
+Variável DEPT
+Tipo SAS:Char
+Tamanho do campo:8
+Tipo Databricks: string
+Resultado: OK
+
+Variável DOJ
+Tipo SAS:Num
+Tamanho do campo:8
+FORMAT: YYMMDD10.
+Tipo Databricks: date
+Resultado: OK
+
+Variável ID
+Tipo SAS:Num
+Tamanho do campo:8
+FORMAT: BEST1.
+Tipo Databricks: int
+Resultado: OK
+
+Variável NAME
+Tipo SAS:Char
+Tamanho do campo:8
+Tipo Databricks: string
+Resultado: OK
+
+Variável SALARY
+Tipo SAS:Num
+Tamanho do campo:8
+Tipo Databricks: float
+Resultado: OK
+
+Resultado do teste: APROVADO
+Teste concluido em 0.05 segundos 
