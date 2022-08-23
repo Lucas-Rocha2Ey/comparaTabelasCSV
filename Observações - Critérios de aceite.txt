@@ -1,4 +1,0 @@
-O periodo que eu digitei na entrada do relatório tem que estar
-na saida do relatório
-
-adicionar o formato de dados no relatório
