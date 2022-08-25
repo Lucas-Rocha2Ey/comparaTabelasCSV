@@ -1,3 +1,8 @@
+Estes prompts exigem a instalação de algumas bibliotecas específicas. Para tal, você deve abrir
+o prompt de comando do windows ou o terminal do Python e rodar o comando
+pip install -r requirements.txt para instalar tais bibliotecas.
+==================================
+
 Ordem de execução dos testes:
 
 1 - Abra o prompt de comando do Windows 
