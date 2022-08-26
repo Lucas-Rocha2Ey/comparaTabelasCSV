@@ -1,33 +1,13 @@
 Relatório final do teste
 
-Data de Execução: 26/08/2022 15:13
+Data de Execução: 26/08/2022 16:22
 
 Arquivo original: C:\Users\NZ366ES\OneDrive - EY\Documents\Chubb\comparaTabelasCSV\exported_data_sas.csv
 Arquivo convertido: C:\Users\NZ366ES\OneDrive - EY\Documents\Chubb\comparaTabelasCSV\exported_data_databricks.csv
 
 
-TESTE: FORMATO DOS ARQUIVOS
-Os arquivos possuem o mesmo formato .csv.
-Resultado: TESTE APROVADO
-
-TESTE: QUANTIDADE DE LINHAS
-Os arquivos possuem a mesma quantidade de linhas - 8 linhas.
-Resultado: TESTE APROVADO
-
-TESTE: QUANTIDADE DE COLUNAS
-Os arquivos possuem a mesma quantidade de colunas - 5 colunas.
-Resultado: TESTE APROVADO
-
 TESTE: CONTEÚDO DAS COLUNAS
-Os arquivos possuem as mesmas colunas - ['ID', 'NAME', 'SALARY', 'DEPT', 'DOJ'].
+Os arquivos possuem as mesmas colunas, porém sofreu tratamento de espaços ou acentos especiais
 Resultado: TESTE APROVADO
 
-TESTE: CONTEÚDO DAS LINHAS
-Os arquivos possuem o mesmo conteúdo.
-Resultado: TESTE APROVADO
-
-TESTE: CONTEÚDO DAS LINHAS NA ORDEM
-Os arquivos possuem o mesmo conteúdo, na mesma ordem.
-Resultado: TESTE APROVADO
-
-Teste concluido em 0.03 segundos 
+Teste concluido em 0.01 segundos 

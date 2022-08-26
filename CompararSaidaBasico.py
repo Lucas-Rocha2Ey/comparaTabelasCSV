@@ -5,6 +5,7 @@ import time
 import pandas as pd
 import escrevendo_planilha_excel as epe
 from datetime import datetime
+import unicodedata
 
 DIRETORIO_ATUAL = os.getcwd()
 ARQUIVO_TEMPLATE = DIRETORIO_ATUAL + '\\Template - Relatório de teste.xlsx'
@@ -170,11 +171,38 @@ def testeConteudoColunas(arquivo_original, arquivo_pos_conversao):
               "Resultado: TESTE APROVADO\n")
         epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F12', 'APROVADO')
     else:
-        print(f"RESULTADO ESPERADO:\nArquivo original: {list(df_arquivo_original.columns)}\n" \
-              f"Arquivo convertido: {list(df_arquivo_original.columns)}\n" \
-              f"RESULTADO OBTIDO: \nArquivo original: {list(df_arquivo_original.columns)}\n" \
-              f"Arquivo convertido: {list(df_arquivo_convertido.columns)}\nResultado: TESTE REPROVADO\n")
-        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F12', 'REPROVADO')
+        ##### Colunas do SAS vao passar por um tratamento se contém espaços e pontos e passará por uma
+        ##### nova comparação
+        colunas_sas_transf = []
+
+        for cada_colunas_sas in df_arquivo_original.columns:
+            new_column_1 = cada_colunas_sas.replace('. ', '_') # Substitui '. ' por '_'
+            new_column_2 = new_column_1.replace('.', '_')
+            new_column = new_column_2.replace(' ', '_')
+            # Linha abaixo retira acentos/caracteres especiais
+            new_column = ''.join(
+                ch for ch in unicodedata.normalize('NFKD', new_column) if not unicodedata.combining(ch))
+            colunas_sas_transf.append(new_column)
+
+        if colunas_sas_transf == list(df_arquivo_convertido.columns):
+            print(f"Os arquivos possuem as mesmas colunas, porém sofreu tratamento de espaços ou acentos especiais\n" \
+                  "Resultado: TESTE APROVADO\n")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F12',
+                                 'APROVADO - COM TRATAMENTO DE ESPAÇO E CARACTERES ESPECIAIS')
+        else:
+            print(f"RESULTADO ESPERADO:\nArquivo original: {list(df_arquivo_original.columns)}\n" \
+                  f"Arquivo original - tratado: {colunas_sas_transf}\n" \
+                  f"Arquivo convertido: {colunas_sas_transf}\n" \
+                  f"RESULTADO OBTIDO: \nArquivo original: {list(df_arquivo_original.columns)}\n" \
+                  f"Arquivo original - tratado: {colunas_sas_transf}\n" \
+                  f"Arquivo convertido: {list(df_arquivo_convertido.columns)}\nResultado: TESTE REPROVADO\n")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F12', 'REPROVADO')
+
+
+
+
+
+
 
 def testeConteudoLinhas(arquivo_original, arquivo_pos_conversao):
     """

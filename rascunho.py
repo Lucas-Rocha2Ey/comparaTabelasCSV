@@ -99,6 +99,7 @@ if condicao1 and condicao2:
     print("Teste aprovado")
 """
 
+"""
 dictTestes = {1: "teste1()", 2:"teste2()", 3:"teste3()", 4:"teste4()",
               5: "teste5()", 6:"teste6()"}
 
@@ -118,3 +119,24 @@ input_testes = input("Digite o(s) código(s) dos testes que deseja executar, sep
 lista_testes = input_testes.split()
 for cadaCodigo in lista_testes:
     print(dictTestes.get(int(cadaCodigo)))
+"""
+import unicodedata
+
+colunas_sas = ["Coluna Teste", "Exposure Morte", "Exposure por Intern. H30", "id_pol", "açúcar"]
+colunas_databricks = ["Coluna_Teste", "Exposure_Morte", "Exposure_por_Intern_H30", "ip_pol", "acucar"]
+colunas_sas_transf = []
+
+for cada_colunas_sas in colunas_sas:
+    new_column = cada_colunas_sas.replace('. ', '_')
+    new_column = cada_colunas_sas.replace('.', '_')
+    new_column = cada_colunas_sas.replace(' ', '_')
+    new_column = ''.join(ch for ch in unicodedata.normalize('NFKD', new_column) if not unicodedata.combining(ch))
+    colunas_sas_transf.append(new_column)
+
+for cada_coluna_sas_original, cada_coluna_sas_tratada in zip(colunas_sas, colunas_sas_transf):
+    if cada_coluna_sas_original != cada_coluna_sas_tratada:
+        print("Colunas foram apenas tratadas")
+        break
+
+print(colunas_sas_transf)
+print(colunas_databricks)
