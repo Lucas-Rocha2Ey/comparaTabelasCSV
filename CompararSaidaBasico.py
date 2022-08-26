@@ -130,35 +130,24 @@ def testeQuantidadeColunas(arquivo_original, arquivo_pos_conversao):
     :return: Quantidade de colunas das tabelas comparadas
     """
     print("TESTE: QUANTIDADE DE COLUNAS")
-    # Esta função abre o arquivo e retorna um objeto no formato file.
-    file_original = open(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
-    file_convertido = open(arquivo_pos_conversao, encoding='ISO-8859-1')
-
-    # Esta função le o arquivo File e retorna um Csv.
-    csv_original = csv.reader(file_original)
-    csv_convertido = csv.reader(file_convertido)
-
-    # O next é uma função que lê linha a linha.
-    header_original = next(csv_original)
-    header_convertido = next(csv_convertido)
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
+    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C11', datetime.now())
-    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D11', len(header_original))
-    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E11', len(header_convertido))
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D11', df_arquivo_original.shape[1])
+    epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E11', df_arquivo_convertido.shape[1])
 
-    if len(header_original) == len(header_convertido):
-        print(f"Os arquivos possuem a mesma quantidade de colunas - {len(header_original)} colunas.\n"\
+    if df_arquivo_original.shape[1] == df_arquivo_convertido.shape[1]:
+        print(f"Os arquivos possuem a mesma quantidade de colunas - {df_arquivo_original.shape[1]} colunas.\n"\
                 "Resultado: TESTE APROVADO\n")
         epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F11', 'APROVADO')
     else:
-        print(f"RESULTADO ESPERADO:\nArquivo original: {len(header_original)} colunas\n" \
-              f"Arquivo convertido: {len(header_original)} colunas\n" \
-              f"RESULTADO OBTIDO: \nArquivo original: {len(header_original)} colunas\n" \
-              f"Arquivo convertido: {len(header_convertido)} colunas.\nResultado: TESTE REPROVADO\n")
+        print(f"RESULTADO ESPERADO:\nArquivo original: {df_arquivo_original.shape[1]} colunas\n" \
+              f"Arquivo convertido: {df_arquivo_original.shape[1]} colunas\n" \
+              f"RESULTADO OBTIDO: \nArquivo original: {df_arquivo_original.shape[1]} colunas\n" \
+              f"Arquivo convertido: {df_arquivo_convertido.shape[1]} colunas.\nResultado: TESTE REPROVADO\n")
         epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F11', 'REPROVADO')
 
-    file_original.close()
-    file_convertido.close()
 
 def testeConteudoColunas(arquivo_original, arquivo_pos_conversao):
     """
@@ -290,7 +279,7 @@ else:
 
     if testeExistenciaArquivos(arquivo_1, arquivo_2):
 
-        sep_option = int(input("Defina a opção para o separador usado no arquivo do SAS (1- ;, 2- , 3- Nenhum"))
+        sep_option = int(input("Defina a opção para o separador usado no arquivo do SAS (1- ;, 2- , 3- Nenhum)\n"))
         if sep_option == 1:
             sep_sas = ';'
         elif sep_option == 2:
