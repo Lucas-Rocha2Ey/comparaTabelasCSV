@@ -178,7 +178,10 @@ def testeConteudoColunas(arquivo_original, arquivo_pos_conversao):
         for cada_colunas_sas in df_arquivo_original.columns:
             new_column_1 = cada_colunas_sas.replace('. ', '_') # Substitui '. ' por '_'
             new_column_2 = new_column_1.replace('.', '_')
-            new_column = new_column_2.replace(' ', '_')
+            new_column_3 = new_column_2.replace(' - ', '_')
+            new_column_4 = new_column_3.replace('- ', '_')
+            new_column_5 = new_column_4.replace('-', '_')
+            new_column = new_column_5.replace(' ', '_')
             # Linha abaixo retira acentos/caracteres especiais
             new_column = ''.join(
                 ch for ch in unicodedata.normalize('NFKD', new_column) if not unicodedata.combining(ch))
