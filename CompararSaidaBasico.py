@@ -101,8 +101,8 @@ def testeQuantidadeLinhas(arquivo_original, arquivo_pos_conversao):
         :return: Quantidade de linhas das tabelas comparadas
         """
     print("TESTE: QUANTIDADE DE LINHAS")
-    df_arquivo_original = pd.read_csv(arquivo_original)
-    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao)
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C10', datetime.now())
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D10', df_arquivo_original.shape[0])
@@ -129,8 +129,8 @@ def testeQuantidadeColunas(arquivo_original, arquivo_pos_conversao):
     """
     print("TESTE: QUANTIDADE DE COLUNAS")
     # Esta função abre o arquivo e retorna um objeto no formato file.
-    file_original = open(arquivo_original)
-    file_convertido = open(arquivo_pos_conversao)
+    file_original = open(arquivo_original, encoding='ISO-8859-1')
+    file_convertido = open(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     # Esta função le o arquivo File e retorna um Csv.
     csv_original = csv.reader(file_original)
@@ -167,8 +167,8 @@ def testeConteudoColunas(arquivo_original, arquivo_pos_conversao):
     :return: Lista com as colunas em cada uma das tabelas
     """
     print("TESTE: CONTEÚDO DAS COLUNAS")
-    df_arquivo_original = pd.read_csv(arquivo_original)
-    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao)
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C12', datetime.now())
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D12', list(df_arquivo_original.columns).__str__())
@@ -195,8 +195,8 @@ def testeConteudoLinhas(arquivo_original, arquivo_pos_conversao):
     """
     print("TESTE: CONTEÚDO DAS LINHAS NA ORDEM")
     passou = True
-    df_arquivo_original = pd.read_csv(arquivo_original)
-    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao)
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C13', datetime.now())
 
@@ -233,8 +233,8 @@ def testeConteudoLinhas2(arquivo_original, arquivo_pos_conversao):
     """
     print("TESTE: CONTEÚDO DAS LINHAS")
     passou = True
-    df_arquivo_original = pd.read_csv(arquivo_original)
-    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao)
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     conjunto_linhas_arquivo_original = set()
     conjunto_linhas_arquivo_convertido = set()
