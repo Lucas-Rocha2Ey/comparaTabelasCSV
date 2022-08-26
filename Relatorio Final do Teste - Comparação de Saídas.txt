@@ -1,6 +1,6 @@
 Relatório final do teste
 
-Data de Execução: 23/08/2022 14:32
+Data de Execução: 26/08/2022 15:13
 
 Arquivo original: C:\Users\NZ366ES\OneDrive - EY\Documents\Chubb\comparaTabelasCSV\exported_data_sas.csv
 Arquivo convertido: C:\Users\NZ366ES\OneDrive - EY\Documents\Chubb\comparaTabelasCSV\exported_data_databricks.csv
@@ -30,4 +30,4 @@ TESTE: CONTEÚDO DAS LINHAS NA ORDEM
 Os arquivos possuem o mesmo conteúdo, na mesma ordem.
 Resultado: TESTE APROVADO
 
-Teste concluido em 0.02 segundos 
+Teste concluido em 0.03 segundos 

@@ -287,18 +287,48 @@ else:
         else:
             sep_sas = None
 
+        print("\nTabela de Testes\n")
+        df = pd.DataFrame({'Cod': [1, 2, 3, 4, 5, 6, 7],
+                           'Teste': ["Teste de Extensão",
+                                     "Teste de Quantidade de Linhas",
+                                     "Teste de Quantidade de Colunas",
+                                     "Teste de Conteúdo das Colunas",
+                                     "Conteudo das Linhas",
+                                     "Conteudo das Linhas (em ordem)",
+                                     "Todos"]})
+        df.set_index('Cod', inplace=True)
+        print(df)
+
+        input_testes = input("Digite o(s) código(s) dos testes que deseja executar, separado por espaço (Ex:1 3 4)\n")
+        lista_testes = input_testes.split()
+
         #Imprimindo na tela
         # Mostrando na tela o relatório do teste
         print("Relatório final do teste - Comparação de Saídas\n")
         print(f"Arquivo original: {arquivo_1}")
         print(f"Arquivo convertido: {arquivo_2}\n\n")
         inicio = datetime.now()
-        testeExtensao(arquivo_1, arquivo_2)
-        testeQuantidadeLinhas(arquivo_1, arquivo_2)
-        testeQuantidadeColunas(arquivo_1, arquivo_2)
-        testeConteudoColunas(arquivo_1, arquivo_2)
-        testeConteudoLinhas2(arquivo_1, arquivo_2)
-        testeConteudoLinhas(arquivo_1, arquivo_2)
+        if '7' in lista_testes:
+            testeExtensao(arquivo_1, arquivo_2)
+            testeQuantidadeLinhas(arquivo_1, arquivo_2)
+            testeQuantidadeColunas(arquivo_1, arquivo_2)
+            testeConteudoColunas(arquivo_1, arquivo_2)
+            testeConteudoLinhas2(arquivo_1, arquivo_2)
+            testeConteudoLinhas(arquivo_1, arquivo_2)
+        else:
+            for cadaCodigo in lista_testes:
+                if int(cadaCodigo) == 1:
+                    testeExtensao(arquivo_1, arquivo_2)
+                elif int(cadaCodigo) == 2:
+                    testeQuantidadeLinhas(arquivo_1, arquivo_2)
+                elif int(cadaCodigo) == 3:
+                    testeQuantidadeColunas(arquivo_1, arquivo_2)
+                elif int(cadaCodigo) == 4:
+                    testeConteudoColunas(arquivo_1, arquivo_2)
+                elif int(cadaCodigo) == 5:
+                    testeConteudoLinhas2(arquivo_1, arquivo_2)
+                elif int(cadaCodigo) == 6:
+                    testeConteudoLinhas(arquivo_1, arquivo_2)
         fim = datetime.now() - inicio
 
         # Imprimindo na tela que o teste foi concluido
@@ -314,12 +344,27 @@ else:
             print(f"Data de Execução: {inicio.strftime('%d/%m/%Y %H:%M')}\n")
             print(f"Arquivo original: {arquivo_1}")
             print(f"Arquivo convertido: {arquivo_2}\n\n")
-            testeExtensao(arquivo_1, arquivo_2)
-            testeQuantidadeLinhas(arquivo_1, arquivo_2)
-            testeQuantidadeColunas(arquivo_1, arquivo_2)
-            testeConteudoColunas(arquivo_1, arquivo_2)
-            testeConteudoLinhas2(arquivo_1, arquivo_2)
-            testeConteudoLinhas(arquivo_1, arquivo_2)
+            if '7' in lista_testes:
+                testeExtensao(arquivo_1, arquivo_2)
+                testeQuantidadeLinhas(arquivo_1, arquivo_2)
+                testeQuantidadeColunas(arquivo_1, arquivo_2)
+                testeConteudoColunas(arquivo_1, arquivo_2)
+                testeConteudoLinhas2(arquivo_1, arquivo_2)
+                testeConteudoLinhas(arquivo_1, arquivo_2)
+            else:
+                for cadaCodigo in lista_testes:
+                    if int(cadaCodigo) == 1:
+                        testeExtensao(arquivo_1, arquivo_2)
+                    elif int(cadaCodigo) == 2:
+                        testeQuantidadeLinhas(arquivo_1, arquivo_2)
+                    elif int(cadaCodigo) == 3:
+                        testeQuantidadeColunas(arquivo_1, arquivo_2)
+                    elif int(cadaCodigo) == 4:
+                        testeConteudoColunas(arquivo_1, arquivo_2)
+                    elif int(cadaCodigo) == 5:
+                        testeConteudoLinhas2(arquivo_1, arquivo_2)
+                    elif int(cadaCodigo) == 6:
+                        testeConteudoLinhas(arquivo_1, arquivo_2)
             print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
             epe.save_excel_file(ARQUIVO_EXCEL, DIRETORIO_DESTINO)
             sys.stdout = sys.__stdout__  # Este comando volta a imprimir no console

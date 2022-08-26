@@ -31,12 +31,13 @@ if set(colunas).intersection(set(colunas_datas)) == set(colunas_datas):
 else:
     print('Há colunas informadas que nao existem na tabela')
 """
-
+"""
 col_data_original = ['10/04/2008', '11/04/2008', '12/04/2008', '13/04/2008', '14/04/2008']
 # col_data_convertido = ['10/04/2008', '11/04/2008', '12/04/2008', '13/04/2008', '14/04/2008'] # Fluxo normal
 format_sas = 'DDMMYY10'
 # col_data_convertido = ['10/04/2008', '11/04/2008', '12/04/2008', '13/04/2008', '15/04/2008'] # entra no if interno
 col_data_convertido = ['2008-04-10', '2008-04-11', '2008-04-12', '2008-04-13', '2008-04-14'] # entra no Except
+"""
 
 """
 passou_teste = True
@@ -69,6 +70,7 @@ if passou_teste:
     print("As datas possuem o mesmo formato")
     print("Teste aprovado")
 """
+"""
 coluna_2 = ['TESTE1', 'TESTE2', 'TESTE3', 'TESTE4', 'TESTE5']
 coluna_3 = [14,15,67,34,41]
 
@@ -95,3 +97,24 @@ condicao2 = periodo_final >= periodo_max
 
 if condicao1 and condicao2:
     print("Teste aprovado")
+"""
+
+dictTestes = {1: "teste1()", 2:"teste2()", 3:"teste3()", 4:"teste4()",
+              5: "teste5()", 6:"teste6()"}
+
+df = pd.DataFrame({'Cod': [1,2,3,4,5,6,7],
+                   'Teste': ["Teste de Extensão",
+                             "Teste de Quantidade de Linhas",
+                             "Teste de Quantidade de Colunas",
+                             "Teste de Conteúdo das Colunas",
+                             "Conteudo das Linhas",
+                             "Conteudo das Linhas (em ordem)",
+                             "Todos"]})
+df.set_index('Cod', inplace=True)
+
+print(df)
+print(dictTestes)
+input_testes = input("Digite o(s) código(s) dos testes que deseja executar, separado por espaço (Ex:1 3 4)\n")
+lista_testes = input_testes.split()
+for cadaCodigo in lista_testes:
+    print(dictTestes.get(int(cadaCodigo)))
