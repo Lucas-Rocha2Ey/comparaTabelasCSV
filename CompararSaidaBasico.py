@@ -10,6 +10,8 @@ DIRETORIO_ATUAL = os.getcwd()
 ARQUIVO_TEMPLATE = DIRETORIO_ATUAL + '\\Template - Relatório de teste.xlsx'
 DIRETORIO_DESTINO = DIRETORIO_ATUAL + '\\Relatório de teste.xlsx'
 
+sep_sas = ',' # O vírgula é o separador padrão.
+
 def carregarExcel():
     try:
         file_exists = epe.does_file_exist(ARQUIVO_TEMPLATE)
@@ -101,7 +103,7 @@ def testeQuantidadeLinhas(arquivo_original, arquivo_pos_conversao):
         :return: Quantidade de linhas das tabelas comparadas
         """
     print("TESTE: QUANTIDADE DE LINHAS")
-    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C10', datetime.now())
@@ -129,7 +131,7 @@ def testeQuantidadeColunas(arquivo_original, arquivo_pos_conversao):
     """
     print("TESTE: QUANTIDADE DE COLUNAS")
     # Esta função abre o arquivo e retorna um objeto no formato file.
-    file_original = open(arquivo_original, encoding='ISO-8859-1')
+    file_original = open(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
     file_convertido = open(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     # Esta função le o arquivo File e retorna um Csv.
@@ -167,7 +169,7 @@ def testeConteudoColunas(arquivo_original, arquivo_pos_conversao):
     :return: Lista com as colunas em cada uma das tabelas
     """
     print("TESTE: CONTEÚDO DAS COLUNAS")
-    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C12', datetime.now())
@@ -195,7 +197,7 @@ def testeConteudoLinhas(arquivo_original, arquivo_pos_conversao):
     """
     print("TESTE: CONTEÚDO DAS LINHAS NA ORDEM")
     passou = True
-    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C13', datetime.now())
@@ -233,7 +235,7 @@ def testeConteudoLinhas2(arquivo_original, arquivo_pos_conversao):
     """
     print("TESTE: CONTEÚDO DAS LINHAS")
     passou = True
-    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1')
+    df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     conjunto_linhas_arquivo_original = set()
@@ -287,6 +289,14 @@ else:
     arquivo_2 = os.getcwd() + "\\" + sys.argv[2]
 
     if testeExistenciaArquivos(arquivo_1, arquivo_2):
+
+        sep_option = int(input("Defina a opção para o separador usado no arquivo do SAS (1- ;, 2- , 3- Nenhum"))
+        if sep_option == 1:
+            sep_sas = ';'
+        elif sep_option == 2:
+            sep_sas = ','
+        else:
+            sep_sas = None
 
         #Imprimindo na tela
         # Mostrando na tela o relatório do teste
