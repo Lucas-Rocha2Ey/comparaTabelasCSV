@@ -3,6 +3,7 @@ import csv
 import sys
 import time
 import pandas as pd
+import numpy as np
 import escrevendo_planilha_excel as epe
 from datetime import datetime
 import unicodedata
@@ -216,31 +217,55 @@ def testeConteudoLinhas(arquivo_original, arquivo_pos_conversao):
         :return: Mensagem de teste aprovado ou a(s) Linha(s) que estão retornando resultados diferentes
     """
     print("TESTE: CONTEÚDO DAS LINHAS NA ORDEM")
-    passou = True
     df_arquivo_original = pd.read_csv(arquivo_original, encoding='ISO-8859-1', sep=sep_sas)
     df_arquivo_convertido = pd.read_csv(arquivo_pos_conversao, encoding='ISO-8859-1')
 
     epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'C13', datetime.now())
 
+    #colocando as colunas iguais das duas tabelas
+    if (df_arquivo_original.columns != df_arquivo_convertido.columns).all():
+        df_arquivo_original.columns = df_arquivo_convertido.columns
+
     try:
-        for index, row in df_arquivo_original.iterrows():
-            linha_arquivo_convertido = list(df_arquivo_convertido.iloc[index])
-            if list(row) != linha_arquivo_convertido:
-                print(f"Linha {int(index) + 1}:\n"\
-                      f"RESULTADO ESPERADO:\nArquivo original: {list(row)}\nArquivo convertido: {list(row)}\n"
-                      f"RESULTADO OBTIDO:\nArquivo original: {list(row)}\nArquivo convertido: {linha_arquivo_convertido}\n")
-                passou = False
-        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'D13', 'OK')
-        if passou:
+        if any(df_arquivo_original.dtypes != df_arquivo_convertido.dtypes):
+            # Data types são diferentes, tentando converter
+            df_arquivo_convertido = df_arquivo_convertido.astype(df_arquivo_original.dtypes)
+        if df_arquivo_original.equals(df_arquivo_convertido):
             print("Os arquivos possuem o mesmo conteúdo, na mesma ordem.\nResultado: TESTE APROVADO\n")
             epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E13', 'MESMO CONTEÚDO DO SAS, NA ORDEM')
             epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F13', 'APROVADO')
         else:
+            diff_mask = (df_arquivo_original != df_arquivo_convertido) & ~(df_arquivo_original.isnull() \
+                                                                           & df_arquivo_convertido.isnull())
+            ne_stacked = diff_mask.stack()
+            changed = ne_stacked[ne_stacked]
+            changed.index.names = ['linha', 'coluna databricks']
+            difference_locations = np.where(diff_mask)
+            changed_sas = df_arquivo_original.values[difference_locations]
+            changed_databricks = df_arquivo_convertido.values[difference_locations]
+            df_diferenca = pd.DataFrame({'linha': changed.index.get_level_values('linha') + 1,
+                                         'coluna databricks': changed.index.get_level_values('coluna databricks'),
+                                         'SAS': changed_sas, 'DATABRICKS': changed_databricks})
+            print(f"Quantidade de linhas diferentes = {len(df_diferenca['linha'].unique())}")
+            print("Linhas que se diferem do SAS e Databricks:\n")
+            print(df_diferenca)
             print("Resultado: TESTE REPROVADO\n")
             epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E13', 'CONTEÚDO DIFERENTE DO SAS')
             epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F13', 'REPROVADO')
     except IndexError:
         print("Não é possível terminar o teste porque as duas tabelas não tem exatamente o mesmo número de linhas")
+        print("Resultado: TESTE REPROVADO\n")
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E13', 'QUANTIDADE DE LINHAS NÃO BATE COM SAS')
+        epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F13', 'REPROVADO')
+    except ValueError:
+        if df_arquivo_original.shape[0] < df_arquivo_convertido.shape[0]:
+            print(f'Não é possível terminar o teste porque há '
+                  f'{int(df_arquivo_convertido.shape[0]) - int(df_arquivo_original.shape[0])} '
+                  f'linhas na tabela convertida, ausente na linha original.')
+        if df_arquivo_original.shape[0] > df_arquivo_convertido.shape[0]:
+            print(f'Não é possível terminar o teste porque há '
+                  f'{int(df_arquivo_original.shape[0]) - int(df_arquivo_convertido.shape[0])} '
+                  f'linhas na tabela original, ausente na linha convertida.')
         print("Resultado: TESTE REPROVADO\n")
         epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E13', 'QUANTIDADE DE LINHAS NÃO BATE COM SAS')
         epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F13', 'REPROVADO')
@@ -319,13 +344,12 @@ else:
             sep_sas = None
 
         print("\nTabela de Testes\n")
-        df = pd.DataFrame({'Cod': [1, 2, 3, 4, 5, 6, 7],
+        df = pd.DataFrame({'Cod': [1, 2, 3, 4, 5, 6],
                            'Teste': ["Teste de Extensão",
                                      "Teste de Quantidade de Linhas",
                                      "Teste de Quantidade de Colunas",
                                      "Teste de Conteúdo das Colunas",
                                      "Conteudo das Linhas",
-                                     "Conteudo das Linhas (em ordem)",
                                      "Todos"]})
         df.set_index('Cod', inplace=True)
         print(df)
@@ -339,12 +363,11 @@ else:
         print(f"Arquivo original: {arquivo_1}")
         print(f"Arquivo convertido: {arquivo_2}\n\n")
         inicio = datetime.now()
-        if '7' in lista_testes:
+        if '6' in lista_testes:
             testeExtensao(arquivo_1, arquivo_2)
             testeQuantidadeLinhas(arquivo_1, arquivo_2)
             testeQuantidadeColunas(arquivo_1, arquivo_2)
             testeConteudoColunas(arquivo_1, arquivo_2)
-            testeConteudoLinhas2(arquivo_1, arquivo_2)
             testeConteudoLinhas(arquivo_1, arquivo_2)
         else:
             for cadaCodigo in lista_testes:
@@ -357,8 +380,6 @@ else:
                 elif int(cadaCodigo) == 4:
                     testeConteudoColunas(arquivo_1, arquivo_2)
                 elif int(cadaCodigo) == 5:
-                    testeConteudoLinhas2(arquivo_1, arquivo_2)
-                elif int(cadaCodigo) == 6:
                     testeConteudoLinhas(arquivo_1, arquivo_2)
         fim = datetime.now() - inicio
 
@@ -375,12 +396,11 @@ else:
             print(f"Data de Execução: {inicio.strftime('%d/%m/%Y %H:%M')}\n")
             print(f"Arquivo original: {arquivo_1}")
             print(f"Arquivo convertido: {arquivo_2}\n\n")
-            if '7' in lista_testes:
+            if '6' in lista_testes:
                 testeExtensao(arquivo_1, arquivo_2)
                 testeQuantidadeLinhas(arquivo_1, arquivo_2)
                 testeQuantidadeColunas(arquivo_1, arquivo_2)
                 testeConteudoColunas(arquivo_1, arquivo_2)
-                testeConteudoLinhas2(arquivo_1, arquivo_2)
                 testeConteudoLinhas(arquivo_1, arquivo_2)
             else:
                 for cadaCodigo in lista_testes:
@@ -393,8 +413,6 @@ else:
                     elif int(cadaCodigo) == 4:
                         testeConteudoColunas(arquivo_1, arquivo_2)
                     elif int(cadaCodigo) == 5:
-                        testeConteudoLinhas2(arquivo_1, arquivo_2)
-                    elif int(cadaCodigo) == 6:
                         testeConteudoLinhas(arquivo_1, arquivo_2)
             print(f"Teste concluido em {round(fim.total_seconds(), 2)} segundos ")
             epe.save_excel_file(ARQUIVO_EXCEL, DIRETORIO_DESTINO)
