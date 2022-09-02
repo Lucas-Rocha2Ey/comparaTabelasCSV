@@ -3,4 +3,4 @@ ID,int
 NAME,string
 SALARY,float
 DEPT,string
-DOJ,date
+DOJ,string

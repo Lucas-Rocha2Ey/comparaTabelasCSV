@@ -120,6 +120,8 @@ lista_testes = input_testes.split()
 for cadaCodigo in lista_testes:
     print(dictTestes.get(int(cadaCodigo)))
 """
+
+"""
 import unicodedata
 
 colunas_sas = ["Coluna Teste", "Exposure Morte", "Exposure por Intern. H30", "id_pol", "açúcar"]
@@ -140,3 +142,22 @@ for cada_coluna_sas_original, cada_coluna_sas_tratada in zip(colunas_sas, coluna
 
 print(colunas_sas_transf)
 print(colunas_databricks)
+"""
+dados = [[1, 'Lucas', 19],[2, 'João', 18], [3, 'Melissa', 16]]
+dados_2 = [[1, 'Lucas', 19.0], [2, 'João', ], [3, 'Melissa', 16]]
+
+import pandas as pd
+df_1 = pd.DataFrame(dados)
+df_2 = pd.DataFrame(dados_2)
+
+print(df_2.isin(df_1))
+
+print("=======")
+
+for columns in df_2.columns:
+    print(f"Coluna {columns}:\n {df_2[columns].isin(df_1[columns]).value_counts()}\n")
+
+print(df_2[2].isin(df_1[2]))
+
+
+

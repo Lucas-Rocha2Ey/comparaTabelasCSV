@@ -153,7 +153,7 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                                 f"Resultado Esperado: int\n")
                 elif (re.match(r"^DATET.*", type_format)) or (re.match(r".*TIME.*", type_format)):
                     # checa se é o tipo datetime
-                    if 'datetime' in tipo_variavel_databricks.lower():
+                    if 'datetime' or 'string' in tipo_variavel_databricks.lower():
                         print(
                             f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
                             f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
@@ -165,7 +165,7 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                             f"Resultado Esperado: datetime\n")
                 elif (re.match(r".*DATE.*", type_format)) or (re.match(r"^[DMY]{2}.*", type_format)):
                     # checa se é tipo date
-                    if 'date' in tipo_variavel_databricks.lower():
+                    if 'date' or 'string' in tipo_variavel_databricks.lower():
                         print(
                             f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
                             f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
