@@ -50,9 +50,7 @@ def carregarExcel():
 ARQUIVO_EXCEL = carregarExcel()
 
 
-# importar as duas tabelas
-df_dtypes_databricks = pd.read_csv("mock_data_dtypes_databricks.csv")
-df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", sep=',', header=1)
+
 
 def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
     status_approved = True  # Flag que irá mudar no final do teste para ver se o teste foi aprovado ou não.
@@ -213,6 +211,18 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
         epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'E15', 'Há campos não equivalentes')
         epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F15', 'REPROVADO')
 
+
+sep_option = int(input("Defina a opção para o separador usado no arquivo do SAS (1- ;, 2- , 3- Nenhum)\n"))
+if sep_option == 1:
+    sep_sas = ';'
+elif sep_option == 2:
+    sep_sas = ','
+else:
+    sep_sas = None
+
+# importar as duas tabelas
+df_dtypes_databricks = pd.read_csv("mock_data_dtypes_databricks.csv", encoding='ISO-8859-1', sep=sep_sas)
+df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", sep=',', header=1)
 
 char = input("Aperte enter se já inseriu o tipo dos formatos originais do SAS no arquivo 'sas_proc_content_mock.csv'")
 char = input("Aperte enter se já inseriu o tipo dos formatos originais do Databricks no arquivo"
