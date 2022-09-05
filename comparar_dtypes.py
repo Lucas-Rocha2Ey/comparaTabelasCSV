@@ -222,7 +222,7 @@ else:
 
 # importar as duas tabelas
 df_dtypes_databricks = pd.read_csv("mock_data_dtypes_databricks.csv", encoding='ISO-8859-1', sep=sep_sas)
-df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", sep=',', header=1)
+df_dtypes_sas = pd.read_csv("sas_proc_content_mock.csv", encoding='ISO-8859-1', sep=',', header=1)
 
 char = input("Aperte enter se já inseriu o tipo dos formatos originais do SAS no arquivo 'sas_proc_content_mock.csv'")
 char = input("Aperte enter se já inseriu o tipo dos formatos originais do Databricks no arquivo"
