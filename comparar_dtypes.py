@@ -116,16 +116,16 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                                     f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
                                     f"Resultado Esperado: float ou double\n")
                     else:
-                        if 'int' in tipo_variavel_databricks.lower():
-                            print(
-                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                        else:
-                            status_approved = False
-                            print(
-                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                                f"Resultado Esperado: int\n")
+                        # if 'int' in tipo_variavel_databricks.lower():
+                        print(
+                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                        # else:
+                            # status_approved = False
+                            # print(
+                                # f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                                # f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                # f"Resultado Esperado: int\n")
                 elif 'comma' in type_format.lower():
                     if int(type_format.split('.')[1]) > 0:
                         if ('float' in tipo_variavel_databricks.lower()) or ('double' in tipo_variavel_databricks.lower()):
