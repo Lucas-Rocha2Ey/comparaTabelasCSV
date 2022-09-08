@@ -69,6 +69,10 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                       "Abortando teste...")
                 epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F15', 'ABORTADO')
                 break
+        except IndexError:
+            print(f"Não consegui entrar o nome da variável {cada_variavel} no Databricks")
+            epe.write_cell_excel(ARQUIVO_EXCEL, 'Sheet1', 'F15', 'ABORTADO')
+            break
 
         if 'char' in tipo_variavel_sas.lower():
             if type_length == 1:
@@ -101,104 +105,129 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
                           f"Tipo Databricks: {tipo_variavel_databricks}\nResultado Esperado: int\n")
             else:
                 # Tenho que verificar se o campo format está Nulo ou se tem um formato específico (YYYYMMDD/DATE/etc.)
-                type_format = df_dtypes_sas.query(f"Variable == '{cada_variavel}'")['Format'].values[0]
-                if 'best' in type_format.lower():
-                    if type_format.split('.')[1] != '':
+                type_format = str(df_dtypes_sas.query(f"Variable == '{cada_variavel}'")['Format'].values[0])
+                if type_format.lower() == 'nan':
+                    print(
+                        f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                        f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                else:
+                    if 'best' in type_format.lower():
+                        if type_format.split('.')[1] != '':
+                            if int(type_format.split('.')[1]) > 0:
+                                if ('float' in tipo_variavel_databricks.lower()) or ('double' in
+                                                                                     tipo_variavel_databricks.lower()):
+                                    print(
+                                        f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                        f"{type_length}\n"
+                                        f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                        f"Resultado: OK\n")
+                                else:
+                                    status_approved = False
+                                    print(
+                                        f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                        f"{type_length}\n"
+                                        f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                        f"Resultado Esperado: float ou double\n")
+                        else:
+                            # if 'int' in tipo_variavel_databricks.lower():
+                            print(
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                            # else:
+                                # status_approved = False
+                                # print(
+                                    # f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                                    # f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                    # f"Resultado Esperado: int\n")
+                    elif 'comma' in type_format.lower():
                         if int(type_format.split('.')[1]) > 0:
-                            if ('float' in tipo_variavel_databricks.lower()) or ('double' in tipo_variavel_databricks.lower()):
+                            if ('float' in tipo_variavel_databricks.lower()) or ('double' in
+                                                                                 tipo_variavel_databricks.lower()):
                                 print(
-                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                    f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                    f"{type_length}\n"
+                                    f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                    f"Resultado: OK\n")
                             else:
                                 status_approved = False
                                 print(
-                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                    f"{type_length}\n"
                                     f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
                                     f"Resultado Esperado: float ou double\n")
+                        else:
+                            if 'int' in tipo_variavel_databricks.lower():
+                                print(
+                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                    f"{type_length}\n"
+                                    f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                    f"Resultado: OK\n")
+                            else:
+                                status_approved = False
+                                print(
+                                    f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                    f"{type_length}\n"
+                                    f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                    f"Resultado Esperado: int\n")
+                    elif (re.match(r"^DATET.*", type_format)) or (re.match(r".*TIME.*", type_format)):
+                        # checa se é o tipo datetime
+                        if 'datetime' or 'string' in tipo_variavel_databricks.lower():
+                            print(
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                f"Resultado: OK\n")
+                        else:
+                            status_approved = False
+                            print(
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                f"Resultado Esperado: datetime\n")
+                    elif (re.match(r".*DATE.*", type_format)) or (re.match(r"^[DMY]{2}.*", type_format)):
+                        # checa se é tipo date
+                        if 'date' or 'string' in tipo_variavel_databricks.lower():
+                            print(
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                        else:
+                            status_approved = False
+                            print(
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                f"Resultado Esperado: date ou datetime\n")
+                    elif ('word' in type_format.lower()) or ('negparen' in type_format.lower()):
+                        # tipo negparenw.d no sas => -12345 = (12345)
+                        # Numero negativo é representado em parenteses.
+                        # tipo wordw.d no sas => 7 = SEVEN
+                        # Numeros são escritos por extenso.
+                        if 'string' in tipo_variavel_databricks.lower():
+                            print(
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                        else:
+                            status_approved = False
+                            print(
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
+                                f"Resultado Esperado: string\n")
                     else:
-                        # if 'int' in tipo_variavel_databricks.lower():
-                        print(
-                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                        # else:
-                            # status_approved = False
-                            # print(
-                                # f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                # f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                                # f"Resultado Esperado: int\n")
-                elif 'comma' in type_format.lower():
-                    if int(type_format.split('.')[1]) > 0:
+                        # caso seja NUM, tamanho do campo > 1 e não tiver estabelecido um formato específico -> float,double
                         if ('float' in tipo_variavel_databricks.lower()) or ('double' in tipo_variavel_databricks.lower()):
                             print(
-                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
+                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:"
+                                f"{type_length}\n"
+                                f"Tipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
                         else:
                             status_approved = False
                             print(
-                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                                f"Resultado Esperado: float ou double\n")
-                    else:
-                        if 'int' in tipo_variavel_databricks.lower():
-                            print(
-                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                        else:
-                            status_approved = False
-                            print(
-                                f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                                f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                                f"Resultado Esperado: int\n")
-                elif (re.match(r"^DATET.*", type_format)) or (re.match(r".*TIME.*", type_format)):
-                    # checa se é o tipo datetime
-                    if 'datetime' or 'string' in tipo_variavel_databricks.lower():
-                        print(
                             f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                    else:
-                        status_approved = False
-                        print(
-                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                            f"Resultado Esperado: datetime\n")
-                elif (re.match(r".*DATE.*", type_format)) or (re.match(r"^[DMY]{2}.*", type_format)):
-                    # checa se é tipo date
-                    if 'date' or 'string' in tipo_variavel_databricks.lower():
-                        print(
-                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                    else:
-                        status_approved = False
-                        print(
-                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                            f"Resultado Esperado: date ou datetime\n")
-                elif ('word' in type_format.lower()) or ('negparen' in type_format.lower()):
-                    # tipo negparenw.d no sas => -12345 = (12345)
-                    # Numero negativo é representado em parenteses.
-                    # tipo wordw.d no sas => 7 = SEVEN
-                    # Numeros são escritos por extenso.
-                    if 'string' in tipo_variavel_databricks.lower():
-                        print(
-                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                    else:
-                        status_approved = False
-                        print(
-                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"FORMAT: {type_format}\nTipo Databricks: {tipo_variavel_databricks}\n"
-                            f"Resultado Esperado: string\n")
-                else:
-                    # caso seja NUM, tamanho do campo > 1 e não tiver estabelecido um formato específico -> float,double
-                    if ('float' in tipo_variavel_databricks.lower()) or ('double' in tipo_variavel_databricks.lower()):
-                        print(
-                            f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                            f"Tipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                    else:
-                        status_approved = False
-                        print(
-                        f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                        f"Tipo Databricks: {tipo_variavel_databricks}\nResultado Esperado: float ou double\n")
+                            f"Tipo Databricks: {tipo_variavel_databricks}\nResultado Esperado: float ou double\n")
 
     if status_approved:
         print("Resultado do teste: APROVADO")
