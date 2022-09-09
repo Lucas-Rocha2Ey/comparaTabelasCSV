@@ -75,24 +75,16 @@ def testar_tipos(df_dtypes_databricks, df_dtypes_sas):
             break
 
         if 'char' in tipo_variavel_sas.lower():
-            if type_length == 1:
-                # Pesquisar se a equivalente a Char:
-                if 'char' in tipo_variavel_databricks.lower():
-                    print(f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+            # De acordo com a documentação do databricks,
+            # todo char original do SAS é convertido tudo para string
+            # no databricks.
+            if 'string' in tipo_variavel_databricks.lower():
+                print(f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
                           f"Tipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                else:
-                    status_approved = False
-                    print(f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                    f"Tipo Databricks: {tipo_variavel_databricks}\nResultado Esperado: char\n")
             else:
-                # Pesquisar se a equivalente a String:
-                if 'string' in tipo_variavel_databricks.lower():
-                    print(f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                          f"Tipo Databricks: {tipo_variavel_databricks}\nResultado: OK\n")
-                else:
-                    status_approved = False
-                    print(f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
-                          f"Tipo Databricks: {tipo_variavel_databricks}\nResultado Esperado: string\n")
+                status_approved = False
+                print(f"Variável {cada_variavel}\nTipo SAS:{tipo_variavel_sas}\nTamanho do campo:{type_length}\n"
+                    f"Tipo Databricks: {tipo_variavel_databricks}\nResultado Esperado: string\n")
         if 'num' in tipo_variavel_sas.lower():
             if type_length == 1:
                 # Pesquisar se a equivalente a Int:
